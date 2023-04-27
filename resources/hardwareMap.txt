@@ -1,6 +1,9 @@
 {
  "MotorPWMConfig": [1100, 1500, 1900],
  "ServoPWMConfig": [900, 2100],
- "testMotor": 1,
- "testServo": 3
+ "LU": 18,
+ "LF": 12,
+ "RU": 13,
+ "RF": 19,
+ "Claw": 16
 }
