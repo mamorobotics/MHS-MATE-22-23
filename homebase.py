@@ -21,6 +21,9 @@ def main():
 
             ui.controllerValues = controller.controllerValues
             ui.controllerValues.A = ui.customOne
+            ui.controllerValues.B = ui.customTwo
+            ui.controllerValues.X = ui.customThree
+            ui.controllerValues.Y = ui.customFour
             conn.send(controller.controllerValues.toString().encode('utf-8'), 12)
 
 
