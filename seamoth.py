@@ -254,7 +254,7 @@ class Motor:
         :param speed: speed of motor (-1 - 1)
         """
         pwmSignal = ((speed + 1) / 2) * (
-                    self.hardwareMap["MotorPWMConfig"][2] - self.hardwareMap["MotorPWMConfig"][0]) + \
+                self.hardwareMap["MotorPWMConfig"][2] - self.hardwareMap["MotorPWMConfig"][0]) + \
                     self.hardwareMap["MotorPWMConfig"][0]
 
         PI.set_servo_pulsewidth(self.port, pwmSignal)
@@ -441,6 +441,12 @@ class UI:
     controllerValues = ControllerValues()
 
     menus = {}
+
+    customOne = 0
+    customTwo = 0
+    customThree = 0
+    customFour = 0
+    customFive = 0
 
     def _fullscreen(self):
         winFull = Tk()
@@ -642,6 +648,14 @@ class UI:
 
             if self.menus.get("connStatus", True):
                 connStatus.configure(text=self.connectionStatus)
+
+            # custom values manager
+            if self.menus.get("custom", True):
+                self.customOne = customOne.get()
+                self.customTwo = customTwo.get()
+                self.customThree = customThree.get()
+                self.customFour = customFour.get()
+                self.customFive = customFive.get()
 
             # input display manager
             if self.menus.get("input", True):
