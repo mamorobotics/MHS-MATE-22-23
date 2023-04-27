@@ -740,7 +740,12 @@ class DataConnection:
                     pass
 
             header = int(self.connection.recv(16).decode('utf-8'))
-            message = self.connection.recv(int(msg_len), socket.MSG_WAITALL)
+
+            message = bytearray()
+            while len(message) < int(msg_len):
+                packet = self.connection.recv(int(msg_len) - len(message))
+                message.extend(packet)
+
             if header == 1:
                 logs.append("[ERROR]" + message.decode('utf-8') + "\n")
             if header == 2:
