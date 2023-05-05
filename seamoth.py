@@ -1,4 +1,6 @@
 import datetime
+import blosc
+import pickle
 import PIL
 import cv2
 import json
@@ -254,9 +256,7 @@ class Motor:
 
         :param speed: speed of motor (-1 - 1)
         """
-        pwmSignal = ((speed + 1) / 2) * (
-                self.hardwareMap["MotorPWMConfig"][2] - self.hardwareMap["MotorPWMConfig"][0]) + \
-                    self.hardwareMap["MotorPWMConfig"][0]
+        pwmSignal = ((speed + 1) / 2) * (self.hardwareMap["MotorPWMConfig"][2] - self.hardwareMap["MotorPWMConfig"][0]) + self.hardwareMap["MotorPWMConfig"][0]
 
         PI.set_servo_pulsewidth(self.port, pwmSignal)
 
@@ -332,7 +332,7 @@ class Camera:
     _calls = 0
     _bufferframe = ""
 
-    def readCameraData(self, docallcount=True, callcounts=100):
+    def readCameraData(self, docallcount=False, callcounts=100):
         """
         Reads the current camera image.
 
@@ -366,7 +366,7 @@ class Camera:
         """
 
         encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), int(quality)]
-        return cv2.imencode('.jpg', image, encode_param)[1].tobytes()
+        return blosc.compress(pickle.dumps(cv2.imencode('.jpg', image, encode_param)[1]))
 
     @staticmethod
     def decode(image):
@@ -378,7 +378,7 @@ class Camera:
         :return: Cv2 image object
         """
 
-        npimg = numpy.frombuffer(image, numpy.uint8)
+        npimg = numpy.frombuffer(pickle.loads(blosc.decompress(image)), numpy.uint8)
         return cv2.imdecode(npimg, cv2.IMREAD_COLOR)
 
     @staticmethod
@@ -449,7 +449,7 @@ class UI:
     customFour = 0
     customFive = 0
 
-    fps = 0
+    fps = 60
     frameTimeLast = datetime.datetime.now()
 
     def _fullscreen(self):
@@ -492,7 +492,7 @@ class UI:
 
         self.frame = frame
         diff = datetime.datetime.now() - self.frameTimeLast
-        self.fps = 1 / (diff.microseconds / 1000)
+        self.fps = round((1000/ (diff.microseconds / 1000) + (self.fps * 50)) / 51)
         self.frameTimeLast = datetime.datetime.now()
 
 
