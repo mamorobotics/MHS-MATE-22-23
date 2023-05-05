@@ -1,3 +1,4 @@
+import datetime
 import PIL
 import cv2
 import json
@@ -448,6 +449,9 @@ class UI:
     customFour = 0
     customFive = 0
 
+    fps = 0
+    frameTimeLast = datetime.datetime.now()
+
     def _fullscreen(self):
         winFull = Tk()
         winFull.title(f"Seamoth Fullscreen ({self.teamName})")
@@ -477,6 +481,20 @@ class UI:
 
     def closeFullscreen(self):
         self.fullscreenthread.join()
+
+    def setFrame(self, frame):
+        """
+        Sets a frame
+
+        :param frame: an image from the camera class
+        :return:
+        """
+
+        self.frame = frame
+        diff = datetime.datetime.now() - self.frameTimeLast
+        self.fps = 1 / (diff.microseconds / 1000)
+        self.frameTimeLast = datetime.datetime.now()
+
 
     def _ui(self):
         win = Tk()
@@ -511,6 +529,8 @@ class UI:
             connDetailsIP.pack(side=TOP, anchor=W)
             connDetailsPORT = Label(connDetailsFrame, text="1111", bg=self.backgroundColor, foreground=self.accentColor)
             connDetailsPORT.pack(side=TOP, anchor=W)
+            fpsLabel = Label(connDetailsFrame, text="0", bg=self.backgroundColor, foreground=self.accentColor)
+            fpsLabel.pack(side=TOP, anchor=W)
 
         # conn status settings
         if self.menus.get("connStatus", True):
@@ -645,6 +665,7 @@ class UI:
             if self.menus.get("connDetails", True):
                 connDetailsIP.configure(text=f"IP: {self.connInfo[0]}")
                 connDetailsPORT.configure(text=f"PORT: {self.connInfo[1]}")
+                fpsLabel.configure(text=f"FPS: {self.fps}")
 
             if self.menus.get("connStatus", True):
                 connStatus.configure(text=self.connectionStatus)
