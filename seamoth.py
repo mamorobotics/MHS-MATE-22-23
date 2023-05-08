@@ -490,11 +490,7 @@ class UI:
 
         self.frame = frame
         diff = datetime.datetime.now() - self.frameTimeLast
-<<<<<<< Updated upstream
         self.fps = round((1000/ (diff.microseconds / 1000) + (self.fps * 10)) / 11)
-=======
-        self.fps = round((1000/ (diff.microseconds / 1000) + (self.fps * 50)) / 51)
->>>>>>> Stashed changes
         self.frameTimeLast = datetime.datetime.now()
 
 
