@@ -330,7 +330,7 @@ class Camera:
     _calls = 0
     _bufferframe = ""
 
-    def readCameraData(self, docallcount=True, callcounts=100):
+    def readCameraData(self, docallcount=False, callcounts=100):
         """
         Reads the current camera image.
 
@@ -490,7 +490,7 @@ class UI:
 
         self.frame = frame
         diff = datetime.datetime.now() - self.frameTimeLast
-        self.fps = round((1000/ (diff.microseconds / 1000) + (self.fps * 10)) / 11)
+        self.fps = round((1000 / (diff.microseconds / 1000 + .01) + (self.fps * 10)) / 11)
         self.frameTimeLast = datetime.datetime.now()
 
 
