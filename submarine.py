@@ -25,11 +25,16 @@ def main():
 
     conn.clientStart("0.0.0.0", 1951)
 
+    qual = 70
+
     while True:
-        conn.send(seamoth.Camera.encode(seamoth.Camera.resize(camera.readCameraData(), 1248, 702), 90))
+        conn.send(seamoth.Camera.encode(seamoth.Camera.resize(camera.readCameraData(), 1248, 702), qual))
 
         if conn.output[0] == 12:
             controllerValues = seamoth.ControllerValues.fromString(conn.output[1].decode('utf-8'))
+
+        if (conn.output[0] == 13):
+            qual = int(conn.output[1].decode('utf-8'))
 
         X = -controllerValues.LeftJoystickX * 100
         Y = controllerValues.LeftJoystickY * 100
