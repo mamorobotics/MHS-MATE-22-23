@@ -1,5 +1,6 @@
 import seamoth
 import zlib
+import cv2
 
 
 def main():
@@ -24,7 +25,7 @@ def main():
         conn.send(controller.controllerValues.toString().encode('utf-8'), 12)
 
         if conn.output[0] == 11:
-            ui.setFrame(seamoth.Camera.decode(zlib.decompress(conn.output[1])))
+            ui.frame = cv2.rotate(seamoth.Camera.decode(zlib.decompress(conn.output[1])), cv2.ROTATE_180)
 
 if __name__ == "__main__":
     main()

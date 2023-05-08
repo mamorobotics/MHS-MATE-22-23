@@ -254,9 +254,7 @@ class Motor:
 
         :param speed: speed of motor (-1 - 1)
         """
-        pwmSignal = ((speed + 1) / 2) * (
-                self.hardwareMap["MotorPWMConfig"][2] - self.hardwareMap["MotorPWMConfig"][0]) + \
-                    self.hardwareMap["MotorPWMConfig"][0]
+        pwmSignal = ((speed + 1) / 2) * (self.hardwareMap["MotorPWMConfig"][2] - self.hardwareMap["MotorPWMConfig"][0]) + self.hardwareMap["MotorPWMConfig"][0]
 
         PI.set_servo_pulsewidth(self.port, pwmSignal)
 
@@ -449,7 +447,7 @@ class UI:
     customFour = 0
     customFive = 0
 
-    fps = 0
+    fps = 60
     frameTimeLast = datetime.datetime.now()
 
     def _fullscreen(self):
@@ -492,7 +490,11 @@ class UI:
 
         self.frame = frame
         diff = datetime.datetime.now() - self.frameTimeLast
+<<<<<<< Updated upstream
         self.fps = round((1000/ (diff.microseconds / 1000) + (self.fps * 10)) / 11)
+=======
+        self.fps = round((1000/ (diff.microseconds / 1000) + (self.fps * 50)) / 51)
+>>>>>>> Stashed changes
         self.frameTimeLast = datetime.datetime.now()
 
 

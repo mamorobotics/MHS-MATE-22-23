@@ -31,11 +31,20 @@ def main():
         if conn.output[0] == 12:
             controllerValues = seamoth.ControllerValues.fromString(conn.output[1].decode('utf-8'))
 
+        left = controllerValues.LeftJoystickY
+        right = controllerValues.LeftJoystickY
+
+        if (controllerValues.LeftJoystickX > 0.5):
+            right = -right
+
+        if (controllerValues.LeftJoystickX < -0.5):
+            left = -left
+
+        LF.setSpeed(left)
+        RF.setSpeed(right)
+
         LU.setSpeed(controllerValues.RightJoystickY)
         RU.setSpeed(controllerValues.RightJoystickY)
-
-        LF.setSpeed(controllerValues.LeftJoystickY*ForwardSpeed + controllerValues.LeftJoystickX*TurnSpeed)
-        RF.setSpeed(controllerValues.LeftJoystickY*ForwardSpeed + -controllerValues.LeftJoystickX*TurnSpeed)
 
         Claw.setPosition(controllerValues.A)
 
