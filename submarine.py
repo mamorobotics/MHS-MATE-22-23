@@ -27,6 +27,9 @@ def main():
 
     qual = 70
 
+    a_down = False
+    claw_closed = False
+
     while True:
         conn.send(seamoth.Camera.encode(seamoth.Camera.resize(camera.readCameraData(), 1248, 702), qual))
 
@@ -49,7 +52,17 @@ def main():
         LU.setSpeed(controllerValues.RightJoystickY)
         RU.setSpeed(controllerValues.RightJoystickY)
 
-        Claw.setPosition(controllerValues.A)
+        if controllerValues.A > 0.5:
+            if not a_down:
+                a_down = True
+                claw_closed = not claw_closed
+        else:
+            a_down = False
+
+        if claw_closed:
+            Claw.setPosition(1)
+        else:
+            Claw.setPosition(0)
 
 
 if __name__ == "__main__":
