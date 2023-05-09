@@ -6,9 +6,6 @@ def main():
     conn = seamoth.DataConnection()
     controllerValues = seamoth.ControllerValues()
 
-    ForwardSpeed = 1
-    TurnSpeed = 0.25
-
     LU = seamoth.Motor()
     LF = seamoth.Motor()
     RU = seamoth.Motor()
@@ -25,6 +22,7 @@ def main():
 
     conn.clientStart("0.0.0.0", 1951)
 
+    forward_speed = .75
     qual = 70
 
     a_down = False
@@ -56,8 +54,8 @@ def main():
             if controllerValues.LeftJoystickX < -0.5:
                 left = -left
 
-            LF.setSpeed(left)
-            RF.setSpeed(right)
+            LF.setSpeed(left * forward_speed)
+            RF.setSpeed(right * forward_speed)
         else:
             X = -controllerValues.LeftJoystickX * 100
             Y = controllerValues.LeftJoystickY * 100
@@ -66,8 +64,8 @@ def main():
             R = (V + W) / 2
             L = (V - W) / 2
 
-            LF.setSpeed(L / 100)
-            RF.setSpeed(R / 100)
+            LF.setSpeed(L / 100 * forward_speed)
+            RF.setSpeed(R / 100 * forward_speed)
 
         LU.setSpeed(controllerValues.RightJoystickY)
         RU.setSpeed(controllerValues.RightJoystickY)
