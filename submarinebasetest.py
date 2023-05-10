@@ -6,7 +6,7 @@ def main():
     camera = seamoth.Camera()
     conn = seamoth.DataConnection()
 
-    conn.clientStart("10.11.105.67", 1951)
+    conn.clientStart("10.11.105.62", 1951)
 
     qual = 100
 

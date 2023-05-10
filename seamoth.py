@@ -43,19 +43,11 @@ class ControllerValues:
 
     To send it over a data connection you can access its value in a dictionary format with:
 
-    ``
-    controllerVaues = ControllerValues()
-
-    dict = controllerValues.getDict()
-    ``
+    ``dict = values.getDict()``
 
     and you can turn this dict back into a Controller values object using from dict as such:
 
-    ``
-    controllerVaues = ControllerValues()
-
-    controllerValues = ControllerValues.fromDict(dict)
-    ``
+    ``values = ControllerValues.fromDict(dict)``
     """
 
     LeftJoystickY = 0
@@ -129,13 +121,13 @@ class Controller:
     Controllers are currently tested to work with XInput designed controllers,
     however controls should be relatively normalized for other types of controllers.
     The class runs in a separate thread to read controller input and assigns read values to an internal
-    buffer in the object. Reading the controllers in your main loop is as simple as referencing that buffer such as:
+    buffer in the object.
 
-    ``
-    controller = Controller()
+    Reading the controllers in your main loop is as simple as creating a controller object:
+    ``controller = Controller()``
 
-    values = controller.controllerValues
-    ``
+    and then gabbing the controllerValue buffer:
+    ``values = controller.controllerValues``
 
     These values are returned as a ControllerValue object.
 
@@ -333,27 +325,20 @@ class Camera:
     _calls = 0
     _bufferframe = ""
 
-    def readCameraData(self, docallcount=False, callcounts=100):
+    def _queryCamera(self):
+        while True:
+            ret, frame = self.capture.read()
+            while not ret:
+                ret, frame = self.capture.read()
+            self.frame = frame
+
+    def readCameraData(self):
         """
         Reads the current camera image.
 
-        :param docallcount: optimises the reading the camera by only actually getting new data ever `x` calls; it isn't recommended to set this to false.
-        :param callcounts: changes how many calls call count optimisation will wait before giving you a new image; lowering this value could fix laggy video feeds
-
         :return: Cv2 image object
         """
-        if docallcount:
-            if self._calls == callcounts:
-                self._calls = 1
-            else:
-                self._calls += 1
-                return self._bufferframe
-
-        ret, frame = self.capture.read()
-        while not ret:
-            ret, frame = self.capture.read()
-        self._bufferframe = frame
-        return frame
+        return self.frame
 
     @staticmethod
     def encode(image, quality: int):
@@ -395,9 +380,18 @@ class Camera:
         """
         return cv2.resize(image, (x, y), interpolation=cv2.INTER_AREA)
 
-    def __init__(self):
+    def __init__(self, size: tuple = (1248, 702)):
         self.capture = cv2.VideoCapture(0)
-        self._bufferframe = self.readCameraData(False)
+        self.capture.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'))
+        self.capture.set(cv2.CAP_PROP_FRAME_WIDTH, size[0])
+        self.capture.set(cv2.CAP_PROP_FRAME_HEIGHT, size[1])
+
+        ret, frame = self.capture.read()
+        while not ret:
+            ret, frame = self.capture.read()
+        self.frame = frame
+
+        Thread(target=self._queryCamera, args=()).start()
 
 
 # all the GUI stuff
@@ -495,7 +489,6 @@ class UI:
         diff = datetime.datetime.now() - self.frameTimeLast
         self.fps = round((1000 / (diff.microseconds / 1000 + .01) + (self.fps * 10)) / 11)
         self.frameTimeLast = datetime.datetime.now()
-
 
     def _ui(self):
         win = Tk()
@@ -787,10 +780,8 @@ class DataConnection:
         Calls function ``func`` whenever a message is received. The message is passed into the function.
         This can be done as such:
 
-        def setFrame(output):
-            ui.setFrame(output[1])
-
-        conn.onRecieve(setFrame)
+        ``conn.onRecieve(setFrame)``
+        Where ``setFrane`` is a function that handles your frame.
 
         :param func: function to be called. must contain a input for a message value
         :return:
@@ -887,6 +878,7 @@ def rgbFromHex(hex_string):
     b = int(hex_string[5:7], 16)
 
     return r, g, b
+
 
 def clamp(i, max, min):
     if i > max:
