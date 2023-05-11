@@ -456,7 +456,7 @@ class UI:
 
         # main loop
         def updateFrame():
-            cv2image = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGB)
+            cv2image = cv2.cvtColor(Camera.resize(self.frame, 1920, 1080), cv2.COLOR_BGR2RGB)
             img = PIL.Image.fromarray(cv2image)
             imgtk = ImageTk.PhotoImage(image=img, master=winFull)
             videoFull.imgtk = imgtk
