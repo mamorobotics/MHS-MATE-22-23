@@ -1,6 +1,8 @@
+import sys
+
 import seamoth
-import zlib
 import cv2
+import time
 
 
 def main():
@@ -15,7 +17,10 @@ def main():
 
     def setFrame(output):
         if output[0] == 11:
-            ui.setFrame(seamoth.Camera.decode(zlib.decompress(output[1])))
+            ui.setFrame(seamoth.Camera.decode(output[1]))
+
+        if output[0] == 16:
+            ui.setTelemetry('Time', (time.perf_counter_ns() - float(output[1].decode())) / 1000000)
 
     conn.onReceive(setFrame)
 
@@ -26,6 +31,9 @@ def main():
 
         conn.send(controller.controllerValues.toString().encode('utf-8'), 12)
         conn.send(str(ui.customOne).encode('utf-8'), 13)
+
+        conn.send(str(time.perf_counter_ns()).encode('utf-8'), 15)
+
 
 if __name__ == "__main__":
     main()

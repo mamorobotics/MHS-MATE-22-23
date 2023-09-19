@@ -25,11 +25,10 @@ def main():
     forward_speed = .75
     qual = 70
 
-    a_down = False
     basic_movement = False
 
     while True:
-        conn.send(seamoth.Camera.encode(seamoth.Camera.resize(camera.readCameraData(), 1248, 702), qual))
+        conn.send(seamoth.Camera.encode(camera.readCameraData()), qual)
 
         if conn.output[0] == 12:
             controllerValues = seamoth.ControllerValues.fromString(conn.output[1].decode('utf-8'))
@@ -38,11 +37,7 @@ def main():
             qual = int(conn.output[1].decode('utf-8'))
 
         if controllerValues.A > 0.5:
-            if not a_down:
-                a_down = True
-                basic_movement = not basic_movement
-        else:
-            a_down = False
+            basic_movement = False
 
         if basic_movement:
             left = controllerValues.LeftJoystickY
@@ -70,6 +65,7 @@ def main():
         LU.setSpeed(controllerValues.RightJoystickY)
         RU.setSpeed(controllerValues.RightJoystickY)
         Claw.setPosition(controllerValues.LeftTrigger)
+        conn.sendTelemetry("claw", controllerValues.LeftTrigger)
 
 
 if __name__ == "__main__":
